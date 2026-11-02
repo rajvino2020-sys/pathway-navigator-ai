@@ -1,0 +1,500 @@
+{
+  "_readme": {
+    "version": "1.1",
+    "purpose": "India-first pathway library for the AI Entrepreneurship Readiness & Pathway Navigator.",
+    "last_verified": "2026-10-30",
+    "rule": "The app may use verified facts below, but must not promise eligibility, funding approval, or successful outcomes. Final decisions remain with the relevant government agency, bank, lender or programme.",
+    "changes_v1_1": [
+      "Added PMEGP application and how-to-apply URLs (supplied by user)",
+      "Added PMFME registration URL (supplied by user)",
+      "SVEP entry route rewritten as community-based (CRP-EP / BRC); no individual online form",
+      "MUDRA entry route: apply through any participating lender; official DFS page kept as source",
+      "Added training_pathways and training_links so training becomes a step in the route",
+      "Added money_0 routing rule and minimum own-contribution fields"
+    ],
+    "unconfirmed": [
+      "URLs added in v1.1 were supplied by the user and have not been opened by Claude",
+      "SVEP how-to-apply detail comes from secondary sources (schemeinfo.com, iie.gov.in, a research paper, Kudumbashree). Confirm with a Block Resource Centre or DAY-NRLM page before the app states it as fact.",
+      "MUDRA: many banks offer their own Mudra forms online (user report); no single central form."
+    ]
+  },
+  "pathways": [
+    {
+      "id": "learning_program",
+      "pathway_name": "Startup India Learning Program",
+      "pathway_type": "Training",
+      "target_user": "People who want to learn how to start a business, including people with an early-stage idea",
+      "business_stage": [
+        "idea",
+        "preparation"
+      ],
+      "location": "India",
+      "sector": "General",
+      "money_fit": {
+        "own_money_required": false,
+        "starting_money": "0 acceptable"
+      },
+      "what_it_provides": [
+        "Free online entrepreneurship learning",
+        "Structured four-week learning program",
+        "Learning from Indian founders",
+        "Certificate"
+      ],
+      "eligibility": "Startup India describes the program as a free online entrepreneurship program for people seeking to develop ideas and ventures.",
+      "requirements": [
+        "Internet-connected phone or computer"
+      ],
+      "language": [
+        "Hindi",
+        "English"
+      ],
+      "entry_route": {
+        "type": "direct_online",
+        "application_method": "Enrol through Startup India Learning & Development"
+      },
+      "preparation_needed": "None; suitable as an early preparation door.",
+      "why_it_may_fit": "Best when the user says: I do not know where to start, has little/no money, or needs basic entrepreneurship knowledge.",
+      "why_it_may_not_fit": "It provides learning, not direct funding.",
+      "next_step": "Open the official learning page and begin the structured program.",
+      "official_sources": [
+        {
+          "label": "Startup India Learning & Development",
+          "url": "https://www.startupindia.gov.in/content/sih/en/learning-and-development_v2.html"
+        },
+        {
+          "label": "Startup India FAQ",
+          "url": "https://www.startupindia.gov.in/content/sih/en/faqs.html"
+        }
+      ],
+      "alternatives": [
+        "svep"
+      ],
+      "status": "verified",
+      "last_verified": "2026-10-30",
+      "verification_notes": "Official Startup India pages confirm the program is free, online, four weeks, and available in Hindi or English."
+    },
+    {
+      "id": "svep",
+      "pathway_name": "SVEP (Start-up Village Entrepreneurship Programme)",
+      "pathway_type": "Business support + mentoring + finance access + training",
+      "target_user": "Rural people starting or developing early-stage enterprises, especially within the DAY-NRLM ecosystem",
+      "business_stage": [
+        "idea",
+        "preparation",
+        "early_business"
+      ],
+      "location": "Rural areas covered by SVEP",
+      "sector": "General rural non-farm enterprise",
+      "money_fit": {
+        "own_money_required": "Not necessarily; support is designed for people facing resource barriers"
+      },
+      "what_it_provides": [
+        "Financial assistance",
+        "Training in business management and soft skills",
+        "Business-development support",
+        "Mentoring",
+        "Finance access",
+        "Access to the banking system",
+        "Guidance for convergence with other government schemes"
+      ],
+      "eligibility": "Access depends on the local SVEP/DAY-NRLM implementation and community ecosystem. The app must verify local availability rather than assume coverage.",
+      "requirements": [
+        "Local programme/community entry point may be required"
+      ],
+      "entry_route": {
+        "type": "community_based",
+        "application_method": "No open individual online application. Support is routed through community institutions under DAY-NRLM.",
+        "how_to_approach": [
+          "Contact the local Community Resource Person - Enterprise Promotion (CRP-EP) or the Block Resource Centre (BRC) in the project block",
+          "Selection is by community organisations (SHG, Village Organisation, Cluster Level Federation) based on need and entrepreneurial potential",
+          "CRP-EP helps prepare a business plan and viability test",
+          "If viable, support is processed through the Community Enterprise Fund or linked financial institutions"
+        ],
+        "portal_note": "svep.nrlm.gov.in is a management portal for state and field officers, not an individual application login.",
+        "confidence": "secondary_sources_confirm_locally"
+      },
+      "preparation_needed": "Be ready to describe the business idea and local circumstances.",
+      "why_it_may_fit": "Strong fit for a rural user with little money, little network, low confidence, and a need for both business guidance and finance access.",
+      "why_it_may_not_fit": "Availability and local access depend on programme coverage and implementation.",
+      "next_step": "Ask the local SHG, Village Organisation or Block Resource Centre whether SVEP runs in the block, and ask for the CRP-EP.",
+      "official_sources": [
+        {
+          "label": "Official SVEP portal",
+          "url": "https://svep.nrlm.gov.in/landing"
+        }
+      ],
+      "alternatives": [
+        "learning_program",
+        "pmfme",
+        "pmegp"
+      ],
+      "status": "verified",
+      "last_verified": "2026-10-30",
+      "verification_notes": "Official SVEP portal was last updated 2026-01-19 and describes early/new rural enterprise support, mentoring, finance access, training and banking access.",
+      "target_user_detail": "Members of Self-Help Groups and their family members starting or expanding non-farm rural enterprises; sources state at least 60% of beneficiaries should be women (confirm)."
+    },
+    {
+      "id": "pmegp",
+      "pathway_name": "PMEGP (Prime Minister's Employment Generation Programme)",
+      "pathway_type": "Funding: bank loan + government margin-money subsidy",
+      "target_user": "Individuals and eligible organisations establishing new micro-enterprises in rural or urban India",
+      "business_stage": [
+        "ready_to_start",
+        "early_business"
+      ],
+      "location": "India",
+      "sector": "Manufacturing and service/business, subject to the scheme's eligible-activity/negative-list rules",
+      "money_fit": {
+        "own_contribution": {
+          "general_category": "10%",
+          "special_category": "5%"
+        },
+        "bank_finance": "Balance of eligible project cost, subject to bank appraisal",
+        "own_money_required": true,
+        "own_contribution_percent_min": 5
+      },
+      "what_it_provides": {
+        "maximum_project_cost_for_subsidy": {
+          "manufacturing": "₹50 lakh",
+          "service_business": "₹20 lakh"
+        },
+        "subsidy_rate": {
+          "general_urban": "15%",
+          "general_rural": "25%",
+          "special_urban": "25%",
+          "special_rural": "35%"
+        },
+        "other": "Bank finance plus government margin-money subsidy."
+      },
+      "eligibility": [
+        "Individual applicant must be above 18 years",
+        "No income ceiling for setting up projects",
+        "For projects above ₹10 lakh in manufacturing or above ₹5 lakh in service/business, at least VIII-standard education is required",
+        "Assistance is for new projects; existing units already covered by specified government subsidy schemes are not eligible"
+      ],
+      "requirements": [
+        "Aadhaar/application information",
+        "Project details and proposed activity",
+        "Project report/DPR information",
+        "Applicable category documents",
+        "Bank appraisal",
+        "Other documents required by the application/bank"
+      ],
+      "training": {
+        "name": "Entrepreneurship Development Programme (EDP)",
+        "required": "Mandatory for claiming margin-money subsidy, subject to stated exemptions",
+        "duration": "At least 5 days for projects up to ₹5 lakh; at least 10 days above ₹5 lakh; no EDP mandatory for projects up to ₹2 lakh",
+        "connection": "PMEGP application → EDP → project/bank processing"
+      },
+      "entry_route": {
+        "type": "direct_online_then_bank",
+        "application_method": "Apply on the official PMEGP portal; the application is then processed through implementing agencies and banks.",
+        "apply_url": "https://pmegp.msme.gov.in/Home/HomePage",
+        "how_to_apply_help_url": "https://pmegp.msme.gov.in/Home/PMEGVideoTutorial"
+      },
+      "preparation_needed": "Define the product/service, customer, estimated project cost, funding need and basic business plan.",
+      "why_it_may_fit": "Useful when the user has a defined new business and needs financing beyond their available cash.",
+      "why_it_may_not_fit": "It is a formal finance pathway and may be premature for an untested idea or a user who is not yet ready with a project proposal. PMEGP covers manufacturing and service units. A shop that only buys and sells goods (trading) may not be eligible, so confirm the activity first.",
+      "next_step": "Build a simple project plan and check whether the proposed activity is eligible before applying.",
+      "what_to_say": "I want to start [business]. I need approximately [amount] for [specific uses]. My expected customers are [customers], and I can contribute [amount/percentage].",
+      "official_sources": [
+        {
+          "label": "PMEGP portal (online application)",
+          "url": "https://pmegp.msme.gov.in/Home/HomePage"
+        },
+        {
+          "label": "PMEGP how to apply (video tutorial)",
+          "url": "https://pmegp.msme.gov.in/Home/PMEGVideoTutorial"
+        },
+        {
+          "label": "PMEGP Revised Guidelines",
+          "url": "https://www.kviconline.gov.in/pmegpeportal/dashboard/notification/Revised_PMEGP_Scheme_Guidelines_07122023_compressed.pdf"
+        }
+      ],
+      "alternatives": [
+        "pmfme",
+        "mudra",
+        "svep"
+      ],
+      "status": "verified",
+      "last_verified": "2026-10-30",
+      "verification_notes": "Current KVIC PMEGP guideline material confirms the ₹50 lakh/₹20 lakh ceilings, contribution and subsidy rates, eligibility conditions and EDP rules.",
+      "training_links": [
+        "pmegp_edp"
+      ],
+      "scope_caution_to_verify": "Added 2026-11-02 as a caution only. Check the PMEGP guidelines for whether trading/retail is eligible, then update this record."
+    },
+    {
+      "id": "mudra",
+      "pathway_name": "MUDRA / PMMY (Pradhan Mantri Mudra Yojana)",
+      "pathway_type": "Funding: collateral-free credit",
+      "target_user": "Micro enterprises needing working capital or term finance for eligible income-generating activities",
+      "business_stage": [
+        "early_business",
+        "growth"
+      ],
+      "location": "India",
+      "sector": "Non-farm income-generating activities, including specified allied agricultural activities",
+      "loan_categories": {
+        "shishu": "Up to ₹50,000",
+        "kishore": "Above ₹50,000 to ₹5 lakh",
+        "tarun": "Above ₹5 lakh to ₹10 lakh",
+        "tarun_plus": "Above ₹10 lakh to ₹20 lakh for entrepreneurs who have successfully repaid a previous Tarun loan, subject to scheme rules"
+      },
+      "what_it_provides": [
+        "Term loans",
+        "Working-capital finance",
+        "Collateral not required under PMMY"
+      ],
+      "eligibility": "Eligibility and lending decisions are made by the participating lender under PMMY rules and the lender's appraisal.",
+      "requirements": [
+        "Identity/address and lender-required documents",
+        "Business/activity information",
+        "Purpose and amount of finance",
+        "Any quotations or financial information requested by the lender"
+      ],
+      "entry_route": {
+        "type": "lender_based",
+        "channels": [
+          "Public sector banks",
+          "Private sector banks",
+          "Foreign banks",
+          "Regional Rural Banks",
+          "Small Finance Banks",
+          "NBFCs",
+          "MFIs",
+          "NBFC-MFIs"
+        ],
+        "application_method": "Apply through a participating lender (bank, MFI or NBFC). Many lenders have their own Mudra forms, some online. Do not present MUDRA as a single central lender.",
+        "user_note": "mudra.org.in did not open for the user on 2026-10-30; use the DFS page as the official source and ask the lender directly."
+      },
+      "preparation_needed": "Know exactly what the finance will purchase and prepare a simple income/repayment explanation.",
+      "why_it_may_fit": "Useful for a user who needs a relatively small amount for equipment or working capital and does not have collateral.",
+      "why_it_may_not_fit": "The lender still performs its own appraisal and can decline an application.",
+      "next_step": "Define the exact amount needed, what it will buy, and the expected repayment source; then approach a participating lender.",
+      "what_to_say": "I need ₹[amount] for [specific purpose]. I expect to earn from [activity] and plan to repay from [income source].",
+      "official_sources": [
+        {
+          "label": "Department of Financial Services — PMMY",
+          "url": "https://financialservices.gov.in/pradhan-mantri-mudra-yojana-pmmy"
+        }
+      ],
+      "alternatives": [
+        "pmegp",
+        "pmfme"
+      ],
+      "status": "verified",
+      "last_verified": "2026-10-30",
+      "verification_notes": "Current Department of Financial Services information confirms the four categories, lender channels and collateral-free nature of PMMY."
+    },
+    {
+      "id": "pmfme",
+      "pathway_name": "PMFME (PM Formalisation of Micro Food Processing Enterprises)",
+      "pathway_type": "Funding + training + handholding",
+      "target_user": "Individual entrepreneurs and eligible groups/enterprises setting up or upgrading micro food-processing activities",
+      "business_stage": [
+        "idea_to_ready_to_start",
+        "early_business",
+        "existing_unit_upgrade"
+      ],
+      "location": "India, implemented through state-level structures",
+      "sector": "Food processing",
+      "money_fit": {
+        "beneficiary_contribution": "Minimum 10% of project cost for the individual-unit credit-linked subsidy component",
+        "bank_loan": "Balance required funding, subject to bank appraisal",
+        "own_money_required": true,
+        "own_contribution_percent_min": 10
+      },
+      "what_it_provides": [
+        "Credit-linked capital subsidy of 35% of eligible project cost, up to ₹10 lakh per individual unit, subject to scheme conditions",
+        "Training/capacity building",
+        "Formalisation support",
+        "Handholding and DPR support through the implementation ecosystem"
+      ],
+      "eligibility": "Official scheme guidance supports both new and existing micro food-processing enterprises, subject to eligible activities and applicable scheme conditions. ODOP products receive preference, while other eligible micro food enterprises may also be considered.",
+      "requirements": [
+        "Project/business details",
+        "Bank-linked finance process",
+        "Beneficiary contribution",
+        "Applicable food/business registrations and regulatory requirements",
+        "Additional documents requested by the implementing agency/bank"
+      ],
+      "training": [
+        "Entrepreneurship development",
+        "Enterprise operations",
+        "Marketing",
+        "Bookkeeping",
+        "Registration",
+        "FSSAI standards",
+        "Hygiene",
+        "Packaging/storage and product-specific skills"
+      ],
+      "entry_route": {
+        "type": "scheme_portal_and_state_implementation",
+        "application_method": "Register on the PMFME portal and work with the state nodal / implementation ecosystem; confirm the local process before acting.",
+        "register_url": "https://pmfme.mofpi.gov.in/pmfme/#/Register-New-User"
+      },
+      "preparation_needed": "Define the food product, target customer, approximate production scale, equipment/working-capital needs and applicable regulatory requirements.",
+      "why_it_may_fit": "Strong fit for a food-processing idea where the user needs capital, training and formalisation support.",
+      "why_it_may_not_fit": "The proposed activity must be eligible under the scheme; the app should check the activity and local implementation route rather than promise eligibility. PMFME supports micro food-processing units, meaning making or processing food products. A tea stall, restaurant or shop that only sells food or drinks may not be eligible, so confirm this first.",
+      "next_step": "Identify the product/activity and state, then verify the applicable PMFME route and eligible activity before preparing the finance proposal.",
+      "what_to_say": "I want to start/upgrade a micro food-processing activity producing [product]. I need support for [equipment/working capital/training] and want to understand the PMFME route available in my area.",
+      "official_sources": [
+        {
+          "label": "PMFME portal (new user registration)",
+          "url": "https://pmfme.mofpi.gov.in/pmfme/#/Register-New-User"
+        },
+        {
+          "label": "MoFPI — Individual Micro Food Processing Units",
+          "url": "https://mofpi.gov.in/pmfme/shgs-fpos-co-operatives-individual-micro-food-enterprise"
+        },
+        {
+          "label": "PMFME Modified Guidelines",
+          "url": "https://pmfme.mofpi.gov.in/massets/documents/advertisement-doc/PMFME_Guidelines_Modification.pdf"
+        }
+      ],
+      "alternatives": [
+        "pmegp",
+        "mudra",
+        "svep"
+      ],
+      "status": "verified",
+      "last_verified": "2026-10-30",
+      "verification_notes": "Official MoFPI/PMFME sources confirm support for new and existing micro food-processing enterprises and the 35%/₹10 lakh individual-unit credit-linked subsidy with minimum 10% beneficiary contribution.",
+      "training_links": [
+        "pmfme_training"
+      ],
+      "scope_caution_to_verify": "Added 2026-11-02 as a caution only. Check the PMFME guidelines/FAQ for whether food service or retail is eligible, then update this record."
+    }
+  ],
+  "not_first_doors": [
+    {
+      "id": "sisfs",
+      "pathway_name": "Startup India Seed Fund Scheme",
+      "status": "later_stage",
+      "reason": "Not a first door for a person who only has an idea. Current official scheme rules require a DPIIT-recognised startup and other incorporation/eligibility conditions.",
+      "routing_instruction": "Consider after the user has progressed to formal startup setup and meets the current SISFS conditions.",
+      "official_source": "https://seedfund.startupindia.gov.in/"
+    }
+  ],
+  "routing_rules": {
+    "principles": [
+      "Recommend pathways based on the user's situation, not by displaying a long scheme list.",
+      "Never say 'you qualify' unless an official authority has confirmed eligibility.",
+      "Use 'this may fit' and explain what must still be confirmed.",
+      "Show the official source and last_verified date for every pathway.",
+      "If local coverage or lender appraisal is required, say so explicitly.",
+      "If a pathway is a later-stage door, do not show it as the user's first action.",
+      "Money: compare the user's available money with the pathway's minimum contribution percentage. Compute and show the implied project size as an illustration only, never as a promise."
+    ],
+    "rules": [
+      {
+        "when": [
+          "money_0"
+        ],
+        "avoid_as_first_door": [
+          "pmegp",
+          "pmfme"
+        ],
+        "reason": "These require a beneficiary contribution (PMEGP 5-10%, PMFME minimum 10%). Start with learning_program and svep, then revisit.",
+        "recommend_first": [
+          "learning_program",
+          "svep"
+        ]
+      },
+      {
+        "when": [
+          "idea_only",
+          "money_0",
+          "low_knowledge"
+        ],
+        "recommend_first": [
+          "learning_program"
+        ]
+      },
+      {
+        "when": [
+          "rural",
+          "money_low",
+          "network_low"
+        ],
+        "recommend_first": [
+          "svep",
+          "learning_program"
+        ]
+      },
+      {
+        "when": [
+          "food_business",
+          "early_stage"
+        ],
+        "consider": [
+          "pmfme",
+          "mudra"
+        ],
+        "precondition": "Check the food activity and local implementation route."
+      },
+      {
+        "when": [
+          "new_business",
+          "defined_project",
+          "finance_needed"
+        ],
+        "consider": [
+          "pmegp",
+          "mudra"
+        ],
+        "precondition": "Prepare a basic project/business plan."
+      },
+      {
+        "when": [
+          "pathway_rejected"
+        ],
+        "action": [
+          "ask_rejection_reason",
+          "identify_fix",
+          "prepare_more_if_needed",
+          "try_alternative_pathway"
+        ]
+      },
+      {
+        "when": [
+          "pathway_selected_has_training_links"
+        ],
+        "action": [
+          "show_training_step_in_route",
+          "state_whether_training_is_required",
+          "state_how_to_access_if_known_else_say_to_confirm"
+        ]
+      }
+    ]
+  },
+  "training_pathways": [
+    {
+      "id": "pmegp_edp",
+      "name": "Entrepreneurship Development Programme (EDP) under PMEGP",
+      "parent_pathway": "pmegp",
+      "when_required": "Mandatory to claim the margin-money subsidy, with stated exemptions (none mandatory up to Rs 2 lakh)",
+      "duration": "At least 5 days up to Rs 5 lakh; at least 10 days above Rs 5 lakh",
+      "route_position": "PMEGP application -> EDP -> project / bank processing",
+      "how_to_access": "UNCONFIRMED: ask the PMEGP implementing agency or district office when the application is processed",
+      "status": "how_to_access_needs_checking"
+    },
+    {
+      "id": "pmfme_training",
+      "name": "PMFME training and capacity building",
+      "parent_pathway": "pmfme",
+      "topics": [
+        "Entrepreneurship development",
+        "Marketing",
+        "Bookkeeping",
+        "Registration",
+        "FSSAI standards",
+        "Hygiene",
+        "Packaging and storage"
+      ],
+      "how_to_access": "UNCONFIRMED: through the state nodal / implementation ecosystem",
+      "status": "how_to_access_needs_checking"
+    }
+  ]
+}

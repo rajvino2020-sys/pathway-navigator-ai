@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pathway Navigator</title>
+<style>
+  :root { --bg:#f7f5f0; --card:#fff; --ink:#1f2a2e; --mute:#5d6b70; --line:#e3ded5;
+          --green:#2f7d5b; --amber:#b9770e; --blue:#2a5d9f; --red:#a83a3a; --grey:#7a7f85; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:17px/1.55 "Nirmala UI","Noto Sans Tamil","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  main { max-width:860px; margin:0 auto; padding:18px 16px 60px; }
+  .top { display:flex; gap:12px; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; }
+  h1 { font-size:1.6rem; margin:0 0 2px; }
+  .tag { color:var(--mute); margin:0 0 12px; max-width:560px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin:14px 0; box-shadow:0 1px 2px rgba(0,0,0,.03); }
+  textarea, input[type=text], select { width:100%; font:inherit; padding:11px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--ink); }
+  textarea { min-height:120px; resize:vertical; }
+  select { width:auto; min-width:150px; }
+  button { font:inherit; cursor:pointer; border:0; border-radius:10px; padding:10px 16px; min-height:44px; background:var(--green); color:#fff; }
+  button.alt { background:#ebe6db; color:var(--ink); }
+  button.warn { background:#f6e6e6; color:var(--red); }
+  button:disabled { opacity:.5; cursor:default; }
+  button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline:3px solid #8fb7e8; outline-offset:2px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+  .badge { font-size:.75rem; padding:2px 9px; border-radius:99px; background:#ebe6db; color:var(--mute); }
+  .chip { font-size:.75rem; padding:2px 9px; border-radius:99px; color:#fff; background:var(--blue); vertical-align:middle; margin-left:6px; white-space:nowrap; }
+  .chip.available_now { background:var(--green); } .chip.prepare_first { background:var(--amber); }
+  .chip.possible_later { background:var(--grey); } .chip.needs_local_confirmation { background:var(--blue); }
+  .slot h2 { font-size:1.1rem; margin:26px 0 2px; }
+  .slot .sub { color:var(--mute); margin:0 0 4px; font-size:.92rem; }
+  .door { border-left:6px solid var(--grey); }
+  .door.start_here { border-left-color:var(--green); } .door.next { border-left-color:var(--amber); }
+  .door h3 { margin:0 0 6px; font-size:1.08rem; }
+  .door p { margin:7px 0; }
+  .label { font-weight:600; }
+  details { margin:7px 0; } summary { cursor:pointer; color:var(--blue); }
+  .small { font-size:.88rem; color:var(--mute); }
+  .err { color:var(--red); margin:8px 0; }
+  .note { background:#fff6e0; border:1px solid #ecd9a6; border-radius:10px; padding:8px 12px; margin:10px 0; font-size:.9rem; }
+  ul { margin:4px 0 4px 20px; padding:0; }
+  .hidden { display:none; }
+  a { color:var(--blue); }
+  h2.t { margin:0 0 6px; font-size:1.1rem; }
+  .snap dl { display:grid; grid-template-columns:150px 1fr; gap:6px 14px; margin:0; }
+  .snap dt { font-weight:600; } .snap dd { margin:0; }
+  .msg { margin:8px 0 0; }
+  @media (max-width:520px) { .snap dl { grid-template-columns:1fr; gap:0; } .snap dd { margin-bottom:8px; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Pathway Navigator</h1>
+      <p class="tag" data-i="tagline"></p>
+    </div>
+    <select id="lang" aria-label="Language">
+      <option value="English|en-IN">English</option>
+      <option value="Hindi|hi-IN">हिन्दी (Hindi)</option>
+      <option value="Tamil|ta-IN">தமிழ் (Tamil)</option>
+      <option value="Telugu|te-IN">తెలుగు (Telugu)</option>
+      <option value="Bengali|bn-IN">বাংলা (Bengali)</option>
+      <option value="Marathi|mr-IN">मराठी (Marathi)</option>
+    </select>
+  </header>
+
+  <section class="card" id="inputCard">
+    <label for="said" class="label" data-i="tell"></label>
+    <p class="small" data-i="hint"></p>
+    <textarea id="said" data-ph="placeholder"></textarea>
+    <div class="row">
+      <button id="mic" class="alt" type="button" data-i="speak"></button>
+      <button id="example" class="alt" type="button" data-i="example"></button>
+      <button id="go" type="button"></button>
+    </div>
+    <p class="small hidden" id="micNote"></p>
+    <div id="followup" class="hidden">
+      <p class="label" id="fuQ"></p>
+      <input type="text" id="fuA" data-ph="answer">
+      <div class="row">
+        <button id="fuMic" class="alt" type="button" data-i="speak"></button>
+        <button id="fuListen" class="alt" type="button" data-i="listen"></button>
+        <button id="fuGo" type="button" data-i="cont"></button>
+      </div>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="note hidden" id="notice"></div>
+    <p class="small hidden" id="status" role="status"></p>
+  </section>
+
+  <div id="results"></div>
+
+  <section class="card">
+    <p class="label" data-i="photo_q"></p>
+    <p class="small" data-i="photo_sub"></p>
+    <input type="file" id="photo" accept="image/*" capture="environment">
+    <div id="photoOut"></div>
+  </section>
+  <p class="small hidden" id="debug"></p>
+</main>
+
+<script src="/static/i18n.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const I18N = window.I18N, EX = window.EXAMPLES, CODES = window.LANG_CODES;
+let profile = null, rejections = [], lastRoute = null, rec = null, recBtn = null, tick = null;
+
+const lang = () => { const [name, code] = $("lang").value.split("|"); return {name, code}; };
+const t = k => ((I18N[lang().name] || {})[k]) || I18N.English[k] || k;
+const profileCode = () => CODES[profile && profile.language && profile.language.preferred_language] || lang().code;
+
+function el(tag, props, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null) n.append(c.nodeType ? c : document.createTextNode(c));
+  return n;
+}
+
+// ---------- page language ----------
+function applyStatic() {
+  document.querySelectorAll("[data-i]").forEach(n => { if (n !== recBtn) n.textContent = t(n.dataset.i); });
+  document.querySelectorAll("[data-ph]").forEach(n => n.setAttribute("placeholder", t(n.dataset.ph)));
+  $("go").textContent = $("go").disabled ? t("wait") : t("go");
+}
+function setUiLang(name) {
+  if (!I18N[name]) return;
+  $("lang").value = name + "|" + CODES[name];
+  document.documentElement.lang = CODES[name].slice(0, 2);
+  try { localStorage.setItem("ui_lang", name); } catch (e) {}
+  applyStatic();
+  if (lastRoute) render(lastRoute);
+}
+function startLang() {
+  try { const s = localStorage.getItem("ui_lang"); if (s && I18N[s]) return s; } catch (e) {}
+  const map = {ta: "Tamil", hi: "Hindi", te: "Telugu", bn: "Bengali", mr: "Marathi", en: "English"};
+  for (const l of (navigator.languages || [navigator.language || "en"])) {
+    const n = map[String(l).slice(0, 2).toLowerCase()]; if (n) return n;
+  }
+  return "English";
+}
+$("lang").addEventListener("change", () => setUiLang(lang().name));
+
+const setErr = m => { $("err").textContent = m || ""; };
+function busy(b, key) {
+  $("go").disabled = b; $("go").textContent = b ? t("wait") : t("go");
+  clearInterval(tick); const s = $("status");
+  if (!b) { s.classList.add("hidden"); return; }
+  const t0 = Date.now(); s.classList.remove("hidden");
+  const draw = () => { s.textContent = t(key) + " (" + Math.round((Date.now() - t0) / 1000) + "s)"; };
+  draw(); tick = setInterval(draw, 1000);
+}
+
+// ---------- voice input (browser speech recognition) ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function voiceInto(btn, target, code) {
+  const note = $("micNote");
+  if (!SR) { note.textContent = t("need_chrome"); note.classList.remove("hidden"); return; }
+  if (rec) { rec.stop(); return; }
+  rec = new SR(); recBtn = btn; rec.lang = code; rec.interimResults = false; rec.continuous = true;
+  btn.textContent = t("stop");
+  rec.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++)
+      if (e.results[i].isFinal) target.value = (target.value + " " + e.results[i][0].transcript).trim(); };
+  rec.onerror = () => { note.textContent = t("no_hear"); note.classList.remove("hidden"); };
+  rec.onend = () => { rec = null; recBtn = null; btn.textContent = t(btn.dataset.i); };
+  rec.start();
+}
+$("mic").addEventListener("click", () => voiceInto($("mic"), $("said"), lang().code));
+$("fuMic").addEventListener("click", () => voiceInto($("fuMic"), $("fuA"), profileCode()));
+function speak(text, code) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = code; speechSynthesis.speak(u); } catch (e) {} }
+$("fuListen").addEventListener("click", () => speak($("fuQ").textContent, profileCode()));
+$("fuA").addEventListener("keydown", e => { if (e.key === "Enter") $("fuGo").click(); });
+$("example").addEventListener("click", () => { $("said").value = EX[lang().name] || EX.English; });
+
+// ---------- flow ----------
+async function post(url, body) {
+  const r = await fetch(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const j = await r.json(); if (!r.ok) throw new Error(j.error || "Something went wrong"); return j;
+}
+$("go").addEventListener("click", async () => {
+  const text = $("said").value.trim();
+  if (!text) { setErr(t("need_text")); return; }
+  setErr(""); $("notice").classList.add("hidden");
+  rejections = []; profile = null; lastRoute = null; $("results").replaceChildren();
+  await extractAndRoute(text, null);
+});
+$("fuGo").addEventListener("click", async () => {
+  const a = $("fuA").value.trim(); if (!a) return;
+  $("fuA").value = ""; $("followup").classList.add("hidden");
+  await extractAndRoute(a, profile);
+});
+async function extractAndRoute(text, prior) {
+  busy(true, "reading");
+  try {
+    const x = await post("/api/extract", {text, ui_language: lang().name, prior_profile: prior});
+    profile = x.profile;
+    const pl = profile.language && profile.language.preferred_language;
+    if (pl && I18N[pl] && pl !== lang().name) setUiLang(pl);   // she spoke Tamil: show the page in Tamil
+    if (x.note) { $("notice").textContent = x.note; $("notice").classList.remove("hidden"); }
+    if (x.questions && x.questions.length) { ask(x.questions); return; }
+    await route();
+  } catch (e) { setErr(e.message); } finally { busy(false); }
+}
+function ask(questions) {
+  $("fuQ").textContent = questions.join(" "); $("followup").classList.remove("hidden");
+  $("followup").scrollIntoView({behavior: "smooth", block: "center"}); $("fuA").focus();
+}
+async function route() {
+  busy(true, "finding");
+  const r = await post("/api/route", {profile, rejections});
+  if (r.status === "needs_clarification") { ask(r.questions); return; }
+  lastRoute = r; render(r);
+}
+
+// ---------- rendering (all text goes through textContent) ----------
+function door(d, slotName) {
+  const c = el("div", {class: "card door " + slotName},
+    el("h3", {text: d.name}, el("span", {class: "chip " + d.status, text: t("st_" + d.status)})),
+    el("p", {text: d.why_it_may_fit}));
+  const line = (key, val) => val ? c.append(el("p", {}, el("span", {class: "label", text: t(key) + " "}), val)) : null;
+  line("next_step", d.next_step); line("prepare", d.what_to_prepare); line("training", d.training_step);
+  if (slotName === "later") line("change", d.fix);
+  if (d.must_confirm && d.must_confirm.length)
+    c.append(el("details", {}, el("summary", {text: t("confirm")}), el("ul", {}, d.must_confirm.map(m => el("li", {text: m})))));
+  if (d.what_to_say) c.append(el("details", {}, el("summary", {text: t("say")}), el("p", {text: d.what_to_say})));
+  const src = d.official_source;
+  if (src && /^https:\/\//.test(src.url))
+    c.append(el("p", {class: "small"}, t("source") + " ", el("a", {href: src.url, target: "_blank", rel: "noopener", text: src.label || src.url}), " · " + t("checked") + " " + d.last_verified));
+
+  const msg = el("p", {class: "msg small", role: "status"});
+  const input = el("input", {type: "text", "aria-label": t("refused"), placeholder: t("reason_ph")});
+  const micBtn = el("button", {type: "button", class: "alt", "data-i": "speak", text: t("speak"),
+    onclick: () => voiceInto(micBtn, input, profileCode())});
+  const send = el("button", {type: "button", text: t("find_another")});
+  const box = el("div", {class: "hidden"}, input, el("div", {class: "row"}, micBtn, send), msg);
+  const submit = async () => {
+    const reason = input.value.trim();
+    if (!reason) { msg.className = "msg err"; msg.textContent = t("need_reason"); return; }
+    rejections.push({pathway_id: d.pathway_id, name: d.name, reason, date: new Date().toISOString().slice(0, 10)});
+    send.disabled = true; input.disabled = true; msg.className = "msg small";
+    const t0 = Date.now();
+    const draw = () => { msg.textContent = t("finding_another") + " (" + Math.round((Date.now() - t0) / 1000) + "s)"; };
+    draw(); const timer = setInterval(draw, 1000);
+    try {
+      await route();                                   // re-draws the whole results area
+      $("results").scrollIntoView({behavior: "smooth", block: "start"});
+    } catch (err) {
+      rejections.pop(); msg.className = "msg err"; msg.textContent = err.message;
+      send.disabled = false; input.disabled = false;
+    } finally { clearInterval(timer); busy(false); }
+  };
+  send.addEventListener("click", submit);
+  input.addEventListener("keydown", ev => { if (ev.key === "Enter") submit(); });
+  c.append(el("div", {class: "row"}, el("button", {class: "warn", type: "button", text: t("refused"),
+    onclick: () => { box.classList.toggle("hidden"); input.focus(); }})), box);
+  return c;
+}
+function slot(title, sub, doors, slotName) {
+  if (!doors.length) return null;
+  return el("div", {class: "slot"}, el("h2", {text: title}), el("p", {class: "sub", text: sub}), doors.map(d => door(d, slotName)));
+}
+function render(r) {
+  const R = r.result, root = $("results"); root.replaceChildren();
+  const s = R.snapshot || {};
+  if (rejections.length)
+    root.append(el("div", {class: "card"}, el("h2", {class: "t", text: t("told_us")}),
+      el("ul", {}, rejections.map(x => el("li", {}, el("span", {class: "label", text: (x.name || x.pathway_id) + ": "}), x.reason))),
+      el("p", {class: "small", text: t("updated_note")})));
+  const rows = [["goal", s.goal], ["idea", s.idea], ["strengths", (s.strengths || []).join(", ")], ["resources", s.resources],
+                ["barriers", (s.main_barriers || []).join(", ").replace(/_/g, " ")], ["readiness", s.readiness_level], ["first_step", s.recommended_first_step]]
+               .filter(x => x[1]);
+  root.append(el("div", {class: "card snap"}, el("h2", {class: "t", text: t("snap_title")}),
+    el("dl", {}, rows.flatMap(([k, v]) => [el("dt", {text: t(k)}), el("dd", {text: v})]))));
+  if (R.message_to_user)
+    root.append(el("div", {class: "card"}, el("p", {text: R.message_to_user}),
+      el("div", {class: "row"}, el("button", {class: "alt", type: "button", text: t("listen"), onclick: () => speak(R.message_to_user, profileCode())}))));
+  if (R.prepare_me && R.prepare_me.length)
+    root.append(el("div", {class: "card"}, el("h2", {class: "t", text: t("practise")}),
+      el("p", {class: "small", text: t("practise_sub")}),
+      el("ul", {}, R.prepare_me.map(p => el("li", {}, el("span", {class: "label", text: p.action + ": "}), p.practice_script)))));
+  [slot(t("start_here"), t("start_sub"), R.doors.start_here, "start_here"),
+   slot(t("next"), t("next_sub"), R.doors.next, "next"),
+   slot(t("later"), t("later_sub"), R.doors.later, "later")].forEach(p => p && root.append(p));
+  if (R.doors.not_yet && R.doors.not_yet.length)
+    root.append(el("div", {class: "slot"}, el("h2", {text: t("not_yet")}), R.doors.not_yet.map(n =>
+      el("div", {class: "card"}, el("h3", {text: n.name}), el("p", {text: n.reason})))));
+  root.append(el("p", {class: "small", text: t("disclaimer")}));
+  root.append(el("div", {class: "row"},
+    el("span", {class: "badge", text: r.engine === "model" ? t("badge_model") : t("badge_rules")}),
+    el("button", {class: "alt", type: "button", text: t("restart"), onclick: restart})));
+  const w = r.warnings || [];
+  if (w.length) console.log("[navigator notes]", w);
+  if (new URLSearchParams(location.search).has("debug")) {
+    $("debug").textContent = "Notes: " + w.join("; ") + " | engine: " + r.engine + " | tags: " + (r.tags || []).join(", ");
+    $("debug").classList.remove("hidden");
+  }
+}
+function restart() {
+  profile = null; rejections = []; lastRoute = null; $("results").replaceChildren(); $("said").value = "";
+  $("followup").classList.add("hidden"); $("notice").classList.add("hidden"); setErr("");
+  window.scrollTo({top: 0, behavior: "smooth"}); $("said").focus();
+}
+
+// ---------- photo explainer ----------
+$("photo").addEventListener("change", async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const out = $("photoOut"); out.replaceChildren(el("p", {class: "small", text: t("photo_reading")}));
+  const fd = new FormData(); fd.append("image", f); fd.append("language", lang().name);
+  try {
+    const r = await fetch("/api/photo", {method: "POST", body: fd}); const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Could not read the photo");
+    out.replaceChildren(
+      el("p", {text: j.plain_language_explanation || j.summary || ""}),
+      (j.key_points || []).length ? el("ul", {}, j.key_points.map(k => el("li", {text: k}))) : null,
+      (j.questions_to_ask_the_office || []).length ? el("details", {open: ""}, el("summary", {text: t("photo_questions")}), el("ul", {}, j.questions_to_ask_the_office.map(k => el("li", {text: k})))) : null,
+      (j.related_pathways || []).map(p => el("p", {class: "small"}, t("photo_related") + " ", el("a", {href: p.official_source.url, target: "_blank", rel: "noopener", text: p.name}))),
+      el("p", {class: "small", text: t("disclaimer")}));
+  } catch (e) { out.replaceChildren(el("p", {class: "err", text: e.message})); }
+});
+
+setUiLang(startLang());
+</script>
+</body>
+</html>

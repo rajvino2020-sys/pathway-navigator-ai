@@ -1,0 +1,431 @@
+{
+  "_readme": {
+    "version": "2.0",
+    "purpose": "Convert a user profile into a small, staged set of entrepreneurship pathways: Start Here, Next, and Later.",
+    "principle": "Recommend a small number of relevant doors instead of showing a long scheme directory.",
+    "safety": [
+      "Never state that the user is definitely eligible.",
+      "Use 'may fit' and show what must be confirmed.",
+      "Do not rank a funding pathway above preparation when the user is not yet ready.",
+      "Use official pathway sources and current verification dates."
+    ]
+  },
+  "routing_pipeline": [
+    "read_user_profile",
+    "identify_starting_stage",
+    "identify_primary_barriers",
+    "identify_support_needs",
+    "match_pathways",
+    "apply_stage_and_fit_rules",
+    "rank_pathways",
+    "generate_reasons",
+    "show_3_to_5_doors",
+    "ask_user_to_choose_a_door"
+  ],
+  "starting_stage_rules": [
+    {
+      "condition": {
+        "business_idea": "no",
+        "knowledge": "low"
+      },
+      "stage": "exploring",
+      "priority": [
+        "learning_program"
+      ]
+    },
+    {
+      "condition": {
+        "business_idea": "yes",
+        "idea_stage": "just_an_idea",
+        "money_available": 0
+      },
+      "stage": "preparation",
+      "priority": [
+        "learning_program",
+        "svep"
+      ]
+    },
+    {
+      "condition": {
+        "business_idea": "yes",
+        "rural_or_urban": "rural",
+        "network": "none_or_limited"
+      },
+      "stage": "preparation_or_early",
+      "priority": [
+        "svep",
+        "learning_program"
+      ]
+    },
+    {
+      "condition": {
+        "sector": "food",
+        "idea_stage": [
+          "tested",
+          "early_sales"
+        ]
+      },
+      "stage": "early_business",
+      "priority": [
+        "pmfme",
+        "mudra"
+      ]
+    },
+    {
+      "condition": {
+        "idea_stage": [
+          "tested",
+          "early_sales"
+        ],
+        "finance_needed": true
+      },
+      "stage": "ready_for_finance",
+      "priority": [
+        "pmegp",
+        "mudra"
+      ]
+    }
+  ],
+  "barrier_to_support": {
+    "do_not_know_where_to_start": [
+      "learning_program"
+    ],
+    "lack_of_knowledge": [
+      "learning_program"
+    ],
+    "lack_of_money": [
+      "svep",
+      "pmfme",
+      "pmegp",
+      "mudra"
+    ],
+    "lack_of_network": [
+      "svep"
+    ],
+    "family_discouragement": [
+      "confidence_building",
+      "role_play"
+    ],
+    "fear_of_failure": [
+      "confidence_building",
+      "role_play"
+    ],
+    "fear_of_rejection": [
+      "role_play"
+    ],
+    "low_confidence": [
+      "confidence_building",
+      "role_play"
+    ],
+    "difficulty_approaching_people": [
+      "role_play",
+      "svep"
+    ],
+    "difficulty_explaining_idea": [
+      "role_play"
+    ],
+    "difficulty_handling_difficult_questions": [
+      "role_play"
+    ],
+    "uncertain_idea": [
+      "learning_program",
+      "market_testing"
+    ]
+  },
+  "pathway_fit_rules": {
+    "learning_program": {
+      "positive_signals": [
+        "idea_only",
+        "low_business_knowledge",
+        "low_funding_knowledge",
+        "do_not_know_where_to_start",
+        "money_0",
+        "needs_basic_business_skills"
+      ],
+      "negative_signals": [
+        "established_business"
+      ],
+      "priority": 90
+    },
+    "svep": {
+      "positive_signals": [
+        "rural",
+        "low_money",
+        "limited_network",
+        "needs_mentor",
+        "needs_business_support",
+        "needs_finance_access",
+        "woman_or_SHG_ecosystem"
+      ],
+      "negative_signals": [
+        "urban_only"
+      ],
+      "priority": 88,
+      "special_check": "Confirm SVEP availability in the user's local area."
+    },
+    "pmfme": {
+      "positive_signals": [
+        "food_sector",
+        "food_processing",
+        "needs_equipment",
+        "needs_training",
+        "early_business",
+        "existing_food_unit_upgrade"
+      ],
+      "priority": 86,
+      "special_check": "Confirm the proposed food activity and applicable state implementation route."
+    },
+    "pmegp": {
+      "positive_signals": [
+        "new_business",
+        "defined_project",
+        "finance_needed",
+        "manufacturing",
+        "service_business"
+      ],
+      "priority": 82,
+      "special_check": "Confirm eligible activity and project/application requirements."
+    },
+    "mudra": {
+      "positive_signals": [
+        "small_finance_need",
+        "equipment_need",
+        "working_capital_need",
+        "early_business",
+        "growth"
+      ],
+      "priority": 78,
+      "special_check": "Participating lender makes the final credit decision."
+    }
+  },
+  "confidence_gate": {
+    "rule": "If the user has a major confidence or approach barrier, show Prepare Me before asking them to approach a funder, bank, mentor or business contact.",
+    "trigger_barriers": [
+      "low_confidence",
+      "fear_of_rejection",
+      "difficulty_approaching_people",
+      "difficulty_explaining_idea",
+      "difficulty_handling_difficult_questions"
+    ],
+    "prepare_actions": [
+      "explain_my_idea",
+      "ask_for_funding",
+      "approach_someone",
+      "handle_difficult_questions",
+      "handle_rejection"
+    ]
+  },
+  "ranking": {
+    "max_recommendations": 5,
+    "minimum_recommendations": 3,
+    "score_components": {
+      "stage_fit": 30,
+      "barrier_fit": 20,
+      "resource_fit": 20,
+      "sector_fit": 15,
+      "support_need_fit": 10,
+      "location_fit": 5
+    },
+    "tie_breaker": [
+      "Earlier-stage pathway wins when the user is not ready for finance.",
+      "Lower-cost/no-cost preparation wins when appropriate.",
+      "Local/community support wins when network is a major barrier."
+    ]
+  },
+  "recommendation_output": {
+    "each_door_contains": [
+      "pathway_name",
+      "status",
+      "fit_score",
+      "why_it_may_fit",
+      "what_it_offers",
+      "what_must_be_confirmed",
+      "what_to_prepare",
+      "entry_route",
+      "official_source",
+      "last_verified",
+      "alternative_door"
+    ],
+    "status_values": [
+      "available_now",
+      "prepare_first",
+      "possible_later",
+      "needs_local_confirmation",
+      "not_recommended"
+    ]
+  },
+  "example": {
+    "user": {
+      "goal": "start_business",
+      "idea": "small food business",
+      "sector": "food",
+      "idea_stage": "just_an_idea",
+      "money_available": 10000,
+      "location": "rural India",
+      "network": "limited",
+      "business_knowledge": "low",
+      "barriers": [
+        "do_not_know_where_to_start",
+        "lack_of_money",
+        "lack_of_network",
+        "low_confidence",
+        "fear_of_rejection"
+      ]
+    },
+    "routing_result": [
+      {
+        "door": "Startup India Learning Program",
+        "status": "available_now",
+        "reason": "You are at the learning/preparation stage and can begin without spending money."
+      },
+      {
+        "door": "SVEP",
+        "status": "needs_local_confirmation",
+        "reason": "You may benefit from rural business support, mentoring and finance access because you have limited money and network."
+      },
+      {
+        "door": "PMFME",
+        "status": "prepare_first",
+        "reason": "Your food idea may fit, but first define the product and check the applicable activity and state route."
+      },
+      {
+        "door": "PMEGP",
+        "status": "prepare_first",
+        "reason": "Finance may become relevant after the project is better defined and you are ready for a formal application."
+      }
+    ],
+    "prepare_me_before_action": [
+      "Explain my food business idea",
+      "Practice asking for support",
+      "Practice difficult questions",
+      "Practice handling rejection"
+    ]
+  },
+  "routing_tag_normalisation": {
+    "idea_only": "business_idea.idea_stage is just_an_idea or exploring",
+    "early_stage": "business_idea.idea_stage is just_an_idea, exploring, tested, or early_sales",
+    "food_business": "business_idea.sector is food or product/service is clearly a food business",
+    "money_0": "resources.money_available.amount equals 0",
+    "money_low": "resources.money_available.amount is greater than 0 and less than or equal to 50000 INR when currency is INR",
+    "low_knowledge": "knowledge.business_basics, knowledge.funding_options, or knowledge.support_programmes is low",
+    "network_low": "network_and_support.business_network and mentor_access are both none or limited",
+    "rural": "location.rural_or_urban is rural",
+    "urban": "location.rural_or_urban is urban or semi_urban",
+    "finance_needed": "funding is included in support_needed or the user explicitly says money is needed",
+    "needs_training": "training is included in support_needed or relevant knowledge areas are low",
+    "needs_mentor": "mentor is included in support_needed or mentor_access is none/limited",
+    "needs_business_support": "business_connections, government_support, or other business support is included in support_needed",
+    "needs_market_testing": "market_testing is included in support_needed or idea is uncertain",
+    "confidence_barrier": "one or more major confidence/approach barriers is present",
+    "validated": "business_idea.idea_stage is tested or early_sales"
+  },
+  "three_stage_output": {
+    "start_here": "The most appropriate immediate action or pathway for the user's current stage.",
+    "next": "A pathway that becomes relevant after the user completes the preparation or action in Start Here.",
+    "later": "A potential future pathway that should not distract the user from the current step.",
+    "maximum_doors_shown": 3,
+    "rule": "Prefer one strong door per stage rather than displaying a long list."
+  },
+  "routing_rules_v2": [
+    {
+      "when": [
+        "idea_only",
+        "money_0",
+        "low_knowledge"
+      ],
+      "start_here": "learning_program",
+      "next": "svep",
+      "later": "pmfme_or_pmegp"
+    },
+    {
+      "when": [
+        "food_business",
+        "idea_only"
+      ],
+      "start_here": "learning_program",
+      "next": "pmfme",
+      "later": "mudra_or_pmegp",
+      "condition": "First define and test the food product and confirm the applicable PMFME route."
+    },
+    {
+      "when": [
+        "rural",
+        "money_low",
+        "network_low"
+      ],
+      "start_here": "svep",
+      "next": "appropriate_finance_pathway",
+      "later": "pmegp_or_mudra",
+      "condition": "Confirm local SVEP availability and pathway access."
+    },
+    {
+      "when": [
+        "validated",
+        "finance_needed"
+      ],
+      "start_here": "prepare_project",
+      "next": "pmegp_or_mudra",
+      "later": "sisfs_if_startup_conditions_are_met"
+    },
+    {
+      "when": [
+        "idea_only"
+      ],
+      "start_here": "learning_program",
+      "next": "prepare_project",
+      "later": "pmegp_or_mudra",
+      "condition": "General early-stage route when no sector-specific rule applies. Prepare and test the idea before finance."
+    }
+  ],
+  "rejection_handling": {
+    "input": "user_profile.journey_state.rejections",
+    "rules": [
+      "Never recommend a rejected pathway as the immediate next door unless the rejection reason has been addressed.",
+      "Ask what reason was given for rejection when the reason is missing.",
+      "Classify the response as fixable_requirement, not_ready, not_eligible_or_unclear, lender_decision, local_availability, or other.",
+      "If fixable, add the required preparation action before reconsidering the pathway.",
+      "If not suitable, lower or remove that pathway and recommend an alternative.",
+      "Always preserve the official-source confirmation requirement."
+    ]
+  },
+  "mvp_flow": [
+    "user_speaks_naturally",
+    "ai_extracts_profile",
+    "derive_routing_tags",
+    "ask_up_to_two_critical_follow_ups_if_needed",
+    "route_to_start_here_next_later",
+    "show_one_primary_door_per_stage",
+    "user_selects_a_door",
+    "prepare_user_for_that_door",
+    "record_action_or_rejection",
+    "reroute_if_rejected"
+  ],
+  "example_v2": {
+    "input_tags": [
+      "food_business",
+      "idea_only",
+      "money_low",
+      "low_knowledge",
+      "network_low",
+      "rural",
+      "confidence_barrier"
+    ],
+    "result": {
+      "start_here": {
+        "pathway_id": "learning_program",
+        "reason": "You are still at the preparation stage, so building basic business knowledge is the best first step.",
+        "next_step": "Start the free online entrepreneurship learning program."
+      },
+      "next": {
+        "pathway_id": "pmfme",
+        "reason": "Your food-business idea may fit this pathway once the product and activity are better defined.",
+        "next_step": "Define and test the food product, then confirm the applicable PMFME route."
+      },
+      "later": {
+        "pathway_id": "mudra",
+        "reason": "Small-business credit may become relevant once you have a clearer business need and are ready to approach a participating lender.",
+        "next_step": "Prepare the amount and purpose of finance you may need."
+      }
+    }
+  }
+}

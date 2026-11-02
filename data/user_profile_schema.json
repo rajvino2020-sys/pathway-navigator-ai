@@ -1,0 +1,257 @@
+{
+  "_readme": {
+    "version": "1.0",
+    "purpose": "Structured user profile for the AI Entrepreneurship Readiness & Pathway Navigator.",
+    "design_principle": "Capture only information needed to understand the person's starting point, barriers, readiness and pathway needs.",
+    "privacy_note": "Collect only what is necessary. Do not require sensitive personal information unless it is directly relevant to a pathway and the user chooses to provide it.",
+    "mvp_collection_rule": "For the demo, the user speaks naturally in one paragraph. The AI extracts the profile, then asks no more than two critical follow-up questions. Typical missing critical fields are money available and rural/urban location. Do not ask questions for fields that can already be inferred."
+  },
+  "user_profile": {
+    "user_id": "string",
+    "created_at": "ISO-8601 datetime",
+    "updated_at": "ISO-8601 datetime",
+    "location": {
+      "country": "string",
+      "state_or_region": "string | null",
+      "district_or_area": "string | null",
+      "rural_or_urban": "rural | urban | semi_urban | unknown"
+    },
+    "goal": {
+      "primary": "start_business | become_self_employed | explore_business | grow_existing_business | other",
+      "description": "string"
+    },
+    "business_idea": {
+      "has_idea": "boolean",
+      "description": "string | null",
+      "sector": "food | agriculture | retail | services | manufacturing | technology | other | unknown",
+      "product_or_service": "string | null",
+      "target_customer": "string | null",
+      "idea_stage": "just_an_idea | exploring | tested | early_sales | established | unknown"
+    },
+    "skills_and_experience": {
+      "skills": [
+        "string"
+      ],
+      "relevant_experience": [
+        "string"
+      ],
+      "business_experience": "none | limited | some | substantial | unknown"
+    },
+    "resources": {
+      "money_available": {
+        "amount": "number | null",
+        "currency": "string | null",
+        "confidence": "exact | approximate | unknown"
+      },
+      "available_resources": [
+        "land",
+        "space",
+        "equipment",
+        "raw_materials",
+        "phone",
+        "internet",
+        "transport",
+        "time",
+        "family_support",
+        "business_contacts",
+        "other",
+        "none",
+        "unknown"
+      ],
+      "time_available": "full_time | part_time | weekends | limited | unknown"
+    },
+    "knowledge": {
+      "business_basics": "low | medium | high | unknown",
+      "finance": "low | medium | high | unknown",
+      "marketing": "low | medium | high | unknown",
+      "legal_and_registration": "low | medium | high | unknown",
+      "funding_options": "low | medium | high | unknown",
+      "support_programmes": "low | medium | high | unknown"
+    },
+    "network_and_support": {
+      "business_network": "none | limited | some | strong | unknown",
+      "mentor_access": "none | limited | some | strong | unknown",
+      "family_support": "supportive | mixed | discouraging | unknown",
+      "community_support": "none | limited | some | strong | unknown"
+    },
+    "barriers": [
+      "do_not_know_where_to_start",
+      "lack_of_money",
+      "lack_of_knowledge",
+      "lack_of_network",
+      "family_discouragement",
+      "fear_of_failure",
+      "fear_of_rejection",
+      "low_confidence",
+      "difficulty_approaching_people",
+      "difficulty_explaining_idea",
+      "difficulty_handling_difficult_questions",
+      "uncertain_idea",
+      "lack_of_time",
+      "lack_of_skills",
+      "other"
+    ],
+    "confidence_and_readiness": {
+      "overall_confidence": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "approaching_strangers": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "asking_for_help": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "asking_for_funding": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "handling_rejection": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "explaining_idea": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "handling_criticism": "comfortable | slightly_nervous | difficult | avoid | unknown",
+      "readiness_level": "exploring | preparing | ready_to_approach | already_acting | unknown"
+    },
+    "support_needed": [
+      "confidence_building",
+      "role_play",
+      "business_basics",
+      "idea_validation",
+      "funding",
+      "training",
+      "mentor",
+      "business_connections",
+      "market_testing",
+      "government_support",
+      "equipment_resources",
+      "registration_guidance",
+      "other"
+    ],
+    "language": {
+      "preferred_language": "string",
+      "comfortable_languages": [
+        "string"
+      ],
+      "needs_simple_language": "boolean"
+    },
+    "journey_state": {
+      "current_stage": "discover | prepare | navigate | act | continue",
+      "current_focus": "string | null",
+      "selected_pathways": [
+        "string"
+      ],
+      "completed_actions": [
+        "string"
+      ],
+      "next_action": "string | null",
+      "last_check_in": "ISO-8601 datetime | null",
+      "rejections": [
+        {
+          "pathway_id": "string",
+          "reason": "string",
+          "date": "ISO-8601 date"
+        }
+      ]
+    },
+    "dynamic_notes": {
+      "strengths_identified_by_ai": [
+        "string"
+      ],
+      "barriers_identified_by_ai": [
+        "string"
+      ],
+      "knowledge_gaps_identified_by_ai": [
+        "string"
+      ],
+      "confidence_observations": [
+        "string"
+      ],
+      "important_context": [
+        "string"
+      ]
+    },
+    "routing_tags": {
+      "derived_by_ai": true,
+      "description": "Tags derived from the profile and used directly by the routing engine.",
+      "allowed_tags": [
+        "idea_only",
+        "early_stage",
+        "validated",
+        "food_business",
+        "money_0",
+        "money_low",
+        "low_knowledge",
+        "network_low",
+        "rural",
+        "urban",
+        "finance_needed",
+        "needs_training",
+        "needs_mentor",
+        "needs_business_support",
+        "needs_market_testing",
+        "confidence_barrier"
+      ]
+    }
+  },
+  "discovery_questions": [
+    {
+      "id": "goal",
+      "question": "What would you like to do?",
+      "maps_to": "goal.primary"
+    },
+    {
+      "id": "idea",
+      "question": "Do you already have an idea, or are you still exploring?",
+      "maps_to": "business_idea"
+    },
+    {
+      "id": "skills",
+      "question": "What do you already know or know how to do that could help?",
+      "maps_to": "skills_and_experience"
+    },
+    {
+      "id": "resources",
+      "question": "What do you already have available — money, space, equipment, skills, people, time or something else?",
+      "maps_to": "resources"
+    },
+    {
+      "id": "barrier",
+      "question": "What is the biggest thing stopping you right now?",
+      "maps_to": "barriers"
+    },
+    {
+      "id": "confidence",
+      "question": "How comfortable are you approaching someone you don't know or someone more experienced than you?",
+      "maps_to": "confidence_and_readiness.approaching_strangers"
+    },
+    {
+      "id": "support",
+      "question": "What kind of support do you think you need?",
+      "maps_to": "support_needed"
+    },
+    {
+      "id": "language",
+      "question": "Which language would you prefer to use?",
+      "maps_to": "language"
+    }
+  ],
+  "readiness_snapshot": {
+    "display_fields": [
+      "goal",
+      "idea",
+      "strengths",
+      "resources",
+      "main_barriers",
+      "readiness_level",
+      "recommended_first_step"
+    ],
+    "rule": "The snapshot should describe the user's current starting point. It should not judge the person's worth, potential or guaranteed funding eligibility."
+  },
+  "routing_tag_derivation": {
+    "idea_only": "business_idea.idea_stage is just_an_idea or exploring",
+    "early_stage": "business_idea.idea_stage is just_an_idea, exploring, tested, or early_sales",
+    "food_business": "business_idea.sector is food or product/service is clearly a food business",
+    "money_0": "resources.money_available.amount equals 0",
+    "money_low": "resources.money_available.amount is greater than 0 and less than or equal to 50000 INR when currency is INR",
+    "low_knowledge": "knowledge.business_basics, knowledge.funding_options, or knowledge.support_programmes is low",
+    "network_low": "network_and_support.business_network and mentor_access are both none or limited",
+    "rural": "location.rural_or_urban is rural",
+    "urban": "location.rural_or_urban is urban or semi_urban",
+    "finance_needed": "funding is included in support_needed or the user explicitly says money is needed",
+    "needs_training": "training is included in support_needed or relevant knowledge areas are low",
+    "needs_mentor": "mentor is included in support_needed or mentor_access is none/limited",
+    "needs_business_support": "business_connections, government_support, or other business support is included in support_needed",
+    "needs_market_testing": "market_testing is included in support_needed or idea is uncertain",
+    "confidence_barrier": "one or more major confidence/approach barriers is present",
+    "validated": "business_idea.idea_stage is tested or early_sales"
+  }
+}
