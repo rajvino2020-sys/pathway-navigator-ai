@@ -295,12 +295,13 @@ HARD RULES
 4. Write message_to_user in USER_PROFILE.language.preferred_language, in simple short sentences, warm and practical. Do not judge the person. Write the other text fields in the same language.
 5. Output valid JSON only, in the schema below.
 6. If REJECTIONS is not empty, message_to_user must begin by kindly acknowledging the refusal, say in one sentence what it probably means, and name the next door to try or the one thing to fix. Put the same fix in the "fix" field of the door it concerns.
-7. Be brief. Every text field is one short sentence (under 25 words). must_confirm has at most 2 items. what_to_say only for start_here doors. prepare_me has at most 3 items. message_to_user at most 3 sentences.
+7. A user's personal barrier (for example, family disagreement, lack of confidence or lack of support) is NOT an official scheme requirement unless the PATHWAY_LIBRARY explicitly says so. Never turn a personal barrier into a requirement, eligibility condition, document, or fix. If the refusal reason mentions family or parents, describe it as a personal/social barrier and focus on official pathway requirements instead.
+8. Be brief. Every text field is one short sentence (under 25 words). must_confirm has at most 2 items. what_to_say only for start_here doors. prepare_me has at most 3 items. message_to_user at most 3 sentences.
 
 HOW TO BUILD THE ROUTE
 - FIRED_RULES give start_here / next / later suggestions. Some values are placeholders (for example "prepare_project", "appropriate_finance_pathway", "pmfme_or_pmegp"). Placeholders are not pathway ids: resolve each to a real library id that fits her stage and money, or turn it into a prepare_me action. Never output a placeholder as a pathway_id.
 - If several rules fire and disagree: earlier-stage, no-cost doors come first; a door appears in only one slot (its earliest); start_here has up to 2 doors, and only when both are free to start and can be done in parallel; next has 1 door; later has 1 door. At most 4 doors in total.
-- If TAGS has money_0, do not put a door that needs her own contribution (pmegp, pmfme) in start_here. Do NOT calculate or estimate any amounts (no project sizes, loan sizes, subsidies, or percentages applied to her money) unless the person explicitly asked for a calculation. You may say in words that the scheme expects some own contribution and that the office will say how much.
+- If TAGS has money_0, do not put a door that needs her own contribution (pmegp, pmfme) in start_here. Do not calculate project size, loan size, subsidy amount or contribution amounts unless the user explicitly asks for a calculation.
 - Food idea plus idea_only: pmfme goes in next, with the condition that the product is tested and the activity and local route are confirmed.
 - If a door has training_links, set training_step from the library's training_pathways: the name, whether required, and how to access it if known, otherwise "ask the office to confirm".
 - Community-based doors (svep): say whom to ask (library entry_route.how_to_approach), that coverage depends on the area, and that there is no individual online application.
@@ -409,16 +410,6 @@ def _source(pid):
 
 
 REMOVE_CLASSES = {"local_availability", "not_eligible_or_unclear"}
-CALC = re.compile(r"(÷|divided by|project size|approximate project|illustration only|\d\s*[x×*/]\s*\d|[=≈]\s*(rs|inr|₹)?\s*\d)", re.I)
-
-
-def strip_calc(text):
-    """Drop sentences that show a calculation. Returns (clean_text, removed_any)."""
-    if not isinstance(text, str) or not CALC.search(text):
-        return text, False
-    parts = re.split(r"(?<=[.!?।])\s+", text)
-    kept = [p for p in parts if not CALC.search(p)]
-    return " ".join(kept).strip(), True
 
 
 def finalize(route, rejections=None):
@@ -468,29 +459,11 @@ def finalize(route, rejections=None):
             warnings.append(f"dropped unknown not_yet id: {pid!r}")
     doors_out["not_yet"] = not_yet
 
-    for slot_name in ("start_here", "next", "later"):
-        for d in doors_out[slot_name]:
-            for key in ("why_it_may_fit", "what_to_prepare", "next_step", "what_to_say", "training_step", "fix"):
-                d[key], hit = strip_calc(d.get(key))
-                if hit:
-                    warnings.append(f"removed a calculation from {d['pathway_id']}.{key}")
-            if isinstance(d.get("must_confirm"), list):
-                cleaned = []
-                for item in d["must_confirm"]:
-                    item, hit = strip_calc(item)
-                    if hit:
-                        warnings.append(f"removed a calculation from {d['pathway_id']}.must_confirm")
-                    if item:
-                        cleaned.append(item)
-                d["must_confirm"] = cleaned
-    message, hit = strip_calc(route.get("message_to_user") or "")
-    if hit:
-        warnings.append("removed a calculation from message_to_user")
     result = {
         "snapshot": route.get("snapshot") or {},
         "doors": doors_out,
         "prepare_me": route.get("prepare_me") or [],
-        "message_to_user": message,
+        "message_to_user": route.get("message_to_user") or "",
         "disclaimer": DISCLAIMER,
     }
     scan = {"d": result["doors"], "m": result["message_to_user"], "p": result["prepare_me"]}
