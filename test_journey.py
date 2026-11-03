@@ -387,6 +387,54 @@ class TestRefusedDoors(unittest.TestCase):
         self.assertIn("svep", ids(r, "next") + ids(r, "later") + ids(r, "start_here"))
 
 
+class TestRequestFallbacks(unittest.TestCase):
+    """The client must adapt if the API rejects an optional setting."""
+
+    class Resp:
+        def __init__(self, status, payload=None, text=""):
+            self.status_code, self._p, self.text = status, payload, text
+
+        def json(self):
+            return self._p
+
+    OK = {"choices": [{"message": {"content": "{\"a\": 1}"}}], "usage": {"completion_tokens": 7}}
+
+    def test_sends_reasoning_effort_and_json_mode(self):
+        calls = []
+
+        def fake_post(url, json=None, **kw):
+            calls.append(json)
+            return self.Resp(200, self.OK)
+        with mock.patch.object(llm, "available", return_value=True), mock.patch.object(llm.requests, "post", fake_post):
+            llm.chat_json([{"role": "user", "content": "x"}], effort="minimal")
+        self.assertEqual(calls[0]["reasoning_effort"], "minimal")
+        self.assertEqual(calls[0]["response_format"], {"type": "json_object"})
+        self.assertEqual(llm.LAST_USAGE["completion_tokens"], 7)
+
+    def test_drops_rejected_settings_one_by_one(self):
+        calls = []
+
+        def fake_post(url, json=None, **kw):
+            calls.append(dict(json))
+            if "reasoning_effort" in json or "response_format" in json:
+                return self.Resp(400, text="unsupported")
+            return self.Resp(200, self.OK)
+        with mock.patch.object(llm, "available", return_value=True), mock.patch.object(llm.requests, "post", fake_post):
+            out = llm.chat([{"role": "user", "content": "x"}], True, effort="low")
+        self.assertEqual(out, '{"a": 1}')
+        self.assertEqual(len(calls), 3)
+        self.assertIn("reasoning_effort", calls[0])
+        self.assertNotIn("reasoning_effort", calls[1])
+        self.assertIn("response_format", calls[1])
+        self.assertNotIn("response_format", calls[2])
+
+    def test_real_errors_still_raise(self):
+        with mock.patch.object(llm, "available", return_value=True), \
+             mock.patch.object(llm.requests, "post", lambda *a, **k: self.Resp(401, text="Unauthorized")):
+            with self.assertRaises(llm.LLMError):
+                llm.chat([{"role": "user", "content": "x"}])
+
+
 class TestJsonParsing(unittest.TestCase):
     def test_fenced_and_chatty(self):
         self.assertEqual(llm.parse_json('```json\n{"a": 1}\n```'), {"a": 1})

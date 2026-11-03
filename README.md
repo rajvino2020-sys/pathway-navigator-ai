@@ -103,6 +103,13 @@ Next: more states and pathways, Nepal and Bangladesh, full role-play practice, p
 - `data/` pathway library (verified 2026-10-30), routing engine, profile schema.
 - `tests/` 49 tests, including full journeys: `python -m unittest discover -s tests`.
 
+## Speed
+
+Muse Spark reasons before it answers, and "reasoning effort" sets how long. The app asks for `minimal` when reading
+what she said and `low` when choosing the doors. Each answer prints a line like
+`[timing] route: 6.2s (model muse-spark-1.3, output tokens 900)` in the terminal. If answers get worse, raise
+`MODEL_ROUTE_EFFORT` to `medium` in `.env`; if they are still slow, lower it. Repeat requests are instant (cached).
+
 ## Known limits
 
 - Voice input uses the browser's speech recognition: Chrome or Edge, and quality varies by language.

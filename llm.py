@@ -61,38 +61,60 @@ def parse_json(text):
     raise LLMError("model did not return valid JSON")
 
 
-def _post(messages, json_mode, timeout):
+# Muse models always reason before answering; "reasoning_effort" controls how long.
+# Lower effort = much faster. Override in .env: MODEL_EXTRACT_EFFORT, MODEL_ROUTE_EFFORT, MODEL_REASONING.
+DEFAULT_EFFORT = os.getenv("MODEL_REASONING", "low")
+EXTRACT_EFFORT = os.getenv("MODEL_EXTRACT_EFFORT", "minimal")
+ROUTE_EFFORT = os.getenv("MODEL_ROUTE_EFFORT", "low")
+LAST_USAGE = {}
+
+
+def _post(messages, json_mode, effort, timeout):
     body = {"model": MODEL, "messages": messages, "temperature": 0.2}
     if json_mode:
         body["response_format"] = {"type": "json_object"}
+    if effort:
+        body["reasoning_effort"] = effort
     return requests.post(f"{BASE}/chat/completions", json=body, timeout=timeout,
                          headers={"Authorization": f"Bearer {key()}",
                                   "Content-Type": "application/json"})
 
 
-def chat(messages, json_mode=True, timeout=90):
-    """Return the text of the first choice. Retries once without response_format if rejected."""
+def chat(messages, json_mode=True, timeout=90, effort=None):
+    """Return the text of the first choice.
+    If the API rejects an optional setting (HTTP 400) it retries with a simpler request."""
+    global LAST_USAGE
     if not available():
         raise LLMError("MODEL_API_KEY is not set")
+    effort = DEFAULT_EFFORT if effort is None else effort
+    variants = [(json_mode, effort)]
+    if effort:
+        variants.append((json_mode, None))
+    if json_mode:
+        variants.append((False, None))
     try:
-        r = _post(messages, json_mode, timeout)
-        if r.status_code == 400 and json_mode:
-            r = _post(messages, False, timeout)   # some models reject response_format
+        r = None
+        for jm, ef in variants:
+            r = _post(messages, jm, ef, timeout)
+            if r.status_code != 400:
+                break
         if r.status_code >= 400:
             raise LLMError(f"API error {r.status_code}: {r.text[:300]}")
-        return r.json()["choices"][0]["message"]["content"]
+        data = r.json()
+        LAST_USAGE = data.get("usage") or {}
+        return data["choices"][0]["message"]["content"]
     except requests.RequestException as e:
         raise LLMError(f"network error: {e}") from e
     except (KeyError, IndexError, ValueError) as e:
         raise LLMError(f"unexpected API response: {e}") from e
 
 
-def chat_json(messages, timeout=90):
+def chat_json(messages, timeout=90, effort=None):
     """Ask for JSON, parse it, and retry once with a stricter reminder if it fails."""
-    text = chat(messages, True, timeout)
+    text = chat(messages, True, timeout, effort)
     try:
         return parse_json(text)
     except LLMError:
         retry = messages + [{"role": "assistant", "content": text},
                             {"role": "user", "content": "Return valid JSON only, nothing else."}]
-        return parse_json(chat(retry, True, timeout))
+        return parse_json(chat(retry, True, timeout, effort))

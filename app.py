@@ -30,7 +30,9 @@ def _timed(label, fn):
     try:
         return fn()
     finally:
-        print(f"[timing] {label}: {time.time() - t:.1f}s (model {llm.MODEL})", flush=True)
+        u = llm.LAST_USAGE or {}
+        tokens = f", output tokens {u.get('completion_tokens')}" if u.get("completion_tokens") is not None else ""
+        print(f"[timing] {label}: {time.time() - t:.1f}s (model {llm.MODEL}{tokens})", flush=True)
 
 
 @app.get("/")
@@ -77,7 +79,7 @@ def extract():
         key = _ck("extract", llm.MODEL, text, ui_language, prior)
         raw = CACHE.get(key)
         if raw is None:
-            raw = _timed("extract", lambda: llm.chat_json(core.build_extract_messages(text, ui_language, prior)))
+            raw = _timed("extract", lambda: llm.chat_json(core.build_extract_messages(text, ui_language, prior), effort=llm.EXTRACT_EFFORT))
             CACHE[key] = raw
         return jsonify(_profile_response(raw, "model", text=text, prior=prior, ui_language=ui_language))
     except llm.LLMError as e:
@@ -108,7 +110,7 @@ def route():
             route_obj = CACHE.get(key)
             if route_obj is None:
                 route_obj = _timed("route", lambda: llm.chat_json(
-                    core.build_route_messages(profile, tags, rules, rejections)))
+                    core.build_route_messages(profile, tags, rules, rejections), effort=llm.ROUTE_EFFORT))
                 CACHE[key] = route_obj
         except llm.LLMError as e:
             warnings.append(f"model unavailable, rules engine used instead: {e}")
